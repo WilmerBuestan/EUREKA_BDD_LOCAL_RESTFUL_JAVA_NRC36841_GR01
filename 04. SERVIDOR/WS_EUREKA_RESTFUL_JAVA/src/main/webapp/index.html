@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Servidor EurekaBank Monster</title>
+<style>
+  :root{
+    --fondo:#0b1426; --panel:#13213b; --panel2:#1a2b4b; --borde:#24395f; --texto:#e8eefb; --tenue:#8fa3c7;
+    --azul:#3d8bfd; --cian:#2dd4bf; --verde:#22c55e; --rojo:#f43f5e; --amarillo:#fbbf24; --morado:#a78bfa;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Roboto,Arial,sans-serif;background:radial-gradient(1200px 600px at 10% -10%,#1d3561 0,transparent 60%),var(--fondo);color:var(--texto);min-height:100vh}
+  header{display:flex;align-items:center;gap:18px;padding:18px 28px;border-bottom:1px solid var(--borde);background:rgba(11,20,38,.7);backdrop-filter:blur(6px);position:sticky;top:0;z-index:5}
+  .monster{width:64px;height:64px;border-radius:16px;object-fit:cover;background:var(--panel2);border:2px solid var(--azul);animation:flotar 3s ease-in-out infinite}
+  .monster-ph{display:grid;place-items:center;font-weight:800;font-size:28px;color:var(--azul)}
+  @keyframes flotar{50%{transform:translateY(-4px) rotate(-2deg)}}
+  h1{font-size:20px;letter-spacing:.3px} h1 small{display:block;color:var(--tenue);font-weight:400;font-size:13px;margin-top:2px}
+  .estado{margin-left:auto;display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:999px;background:var(--panel);border:1px solid var(--borde);font-weight:600;font-size:14px}
+  .punto{width:12px;height:12px;border-radius:50%;background:var(--verde);box-shadow:0 0 0 0 rgba(34,197,94,.7);animation:pulso 1.6s infinite}
+  .estado.caido .punto{background:var(--rojo);animation:none}
+  @keyframes pulso{70%{box-shadow:0 0 0 12px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+  main{max-width:1280px;margin:0 auto;padding:24px 28px 40px;display:grid;gap:20px}
+  .tarjetas{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .tarjeta{background:linear-gradient(160deg,var(--panel2),var(--panel));border:1px solid var(--borde);border-radius:16px;padding:18px;position:relative;overflow:hidden;animation:aparecer .6s both}
+  .tarjeta:nth-child(2){animation-delay:.08s}.tarjeta:nth-child(3){animation-delay:.16s}.tarjeta:nth-child(4){animation-delay:.24s}
+  .tarjeta::after{content:"";position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;background:var(--c,var(--azul));opacity:.12}
+  .tarjeta .et{color:var(--tenue);font-size:13px} .tarjeta .num{font-size:34px;font-weight:800;margin-top:6px;font-variant-numeric:tabular-nums}
+  .tarjeta .sub{color:var(--tenue);font-size:12px;margin-top:4px}
+  @keyframes aparecer{from{opacity:0;transform:translateY(12px)}}
+  .rejilla{display:grid;grid-template-columns:1.4fr 1fr;gap:20px}
+  section{background:var(--panel);border:1px solid var(--borde);border-radius:16px;padding:18px}
+  section h2{font-size:15px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  section h2 .chip{font-size:11px;font-weight:600;color:var(--tenue);border:1px solid var(--borde);border-radius:999px;padding:2px 8px;margin-left:auto}
+  .barra{margin-bottom:12px} .barra .fila{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
+  .pista{height:10px;background:#0e1a30;border-radius:999px;overflow:hidden}
+  .relleno{height:100%;width:0;border-radius:999px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+  .eventos{list-style:none;display:grid;gap:8px;max-height:430px;overflow:auto;padding-right:4px}
+  .evento{display:grid;grid-template-columns:62px 100px 1fr;gap:10px;align-items:center;background:var(--panel2);border:1px solid var(--borde);border-left:4px solid var(--verde);border-radius:10px;padding:9px 12px;font-size:13px;animation:entrar .5s both}
+  .evento.error{border-left-color:var(--rojo)} .evento .hora{color:var(--tenue);font-variant-numeric:tabular-nums}
+  @keyframes entrar{from{opacity:0;transform:translateX(-18px)}}
+  .badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;text-align:center;color:#0b1426}
+  .b-CONSOLA{background:var(--amarillo)} .b-ESCRITORIO{background:var(--morado)} .b-WEB{background:var(--cian)} .b-MOVIL{background:var(--verde)} .b-PANEL{background:var(--azul)} .b-DESCONOCIDO{background:#94a3b8}
+  .vacio{color:var(--tenue);font-size:13px;text-align:center;padding:24px}
+  table{width:100%;border-collapse:collapse;font-size:13px} td,th{padding:8px 6px;border-bottom:1px solid var(--borde);text-align:left}
+  th{color:var(--tenue);font-weight:600} code{font-family:Consolas,monospace;color:var(--cian)}
+  .met{font-weight:700;font-size:11px;padding:2px 7px;border-radius:6px} .GET{background:#0f3d2e;color:var(--verde)} .POST{background:#13315e;color:var(--azul)} .PUT{background:#3d2f0b;color:var(--amarillo)} .DELETE{background:#3d0f1a;color:var(--rojo)}
+  .movs{margin-top:10px;font-size:12px} .movs td{padding:5px 4px} .ing{color:var(--verde)} .sal{color:var(--rojo)}
+  form{display:grid;gap:10px} .dos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  input,select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--borde);background:#0e1a30;color:var(--texto);font-size:14px}
+  input:focus,select:focus{outline:2px solid var(--azul);border-color:transparent}
+  button{padding:11px;border:0;border-radius:10px;background:linear-gradient(90deg,var(--azul),var(--cian));color:#06101f;font-weight:800;cursor:pointer;transition:transform .15s,filter .15s}
+  button:hover{transform:translateY(-1px);filter:brightness(1.08)} button:disabled{opacity:.5;cursor:default}
+  .resultado{margin-top:12px;padding:14px;border-radius:12px;background:var(--panel2);border:1px dashed var(--borde);font-size:15px;min-height:50px}
+  .resultado.ok{border-color:var(--verde);animation:latido .5s} .resultado.mal{border-color:var(--rojo);animation:temblor .4s}
+  @keyframes latido{50%{transform:scale(1.03)}} @keyframes temblor{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  footer{text-align:center;color:var(--tenue);font-size:12px;padding:18px}
+  @media(max-width:900px){.tarjetas{grid-template-columns:repeat(2,1fr)}.rejilla{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <img src="img/monster.png" class="monster" alt="Monster" onerror="this.outerHTML='<div class=&quot;monster monster-ph&quot;>M</div>'">
+  <h1>WS_EUREKA_RESTFUL_JAVA <small>Servidor RESTful EurekaBank Monster · MariaDB · Grupo 1 · NRC 36841</small></h1>
+  <div class="estado" id="estadoBd" style="margin-left:auto"><span class="punto"></span><span id="txtBd">BD…</span></div>
+  <div class="estado" id="estado" style="margin-left:0"><span class="punto"></span><span id="txtEstado">Conectando…</span></div>
+</header>
+
+<main>
+  <div class="tarjetas">
+    <div class="tarjeta" style="--c:var(--azul)"><div class="et">Tiempo activo</div><div class="num" id="uptime">--</div><div class="sub" id="inicio">Inicio: --</div></div>
+    <div class="tarjeta" style="--c:var(--verde)"><div class="et">Sesiones activas</div><div class="num" id="sesiones">0</div><div class="sub">Tokens vigentes (30 min)</div></div>
+    <div class="tarjeta" style="--c:var(--cian)"><div class="et">Operaciones bancarias</div><div class="num" id="operaciones">0</div><div class="sub">Depósitos, retiros y transferencias</div></div>
+    <div class="tarjeta" style="--c:var(--morado)"><div class="et">Peticiones</div><div class="num" id="peticiones">0</div><div class="sub" id="porCliente">—</div></div>
+  </div>
+
+  <div class="rejilla">
+    <section>
+      <h2>📡 Peticiones en tiempo real <span class="chip">se actualiza cada 3 s</span></h2>
+      <ul class="eventos" id="eventos"><li class="vacio">Esperando peticiones de los clientes…</li></ul>
+    </section>
+    <div style="display:grid;gap:20px;align-content:start">
+      <section>
+        <h2>📊 Operaciones por tipo</h2>
+        <div id="barras"></div>
+      </section>
+      <section>
+        <h2>🧪 Prueba rápida: saldo de una cuenta</h2>
+        <form id="fLogin">
+          <div class="dos"><input id="usr" placeholder="Usuario" value="monster"><input id="clv" type="password" placeholder="Clave"></div>
+          <button id="btnLogin">Iniciar sesión</button>
+        </form>
+        <form id="fConv" style="margin-top:12px;display:none">
+          <select id="cta"></select>
+          <button>Consultar saldo y movimientos</button>
+        </form>
+        <div class="resultado" id="res">Inicie sesión con un usuario de la BD (monster / monster69).</div>
+      </section>
+    </div>
+  </div>
+
+  <section>
+    <h2>📱 URL para el celular <span class="chip">cambia según la red: casa, guardia, aula</span></h2>
+    <div id="urlsRed" style="display:grid;gap:8px"><span style="color:var(--tenue)">Detectando IP…</span></div>
+    <p style="color:var(--tenue);font-size:12px;margin-top:10px">Escriba una de estas direcciones en el campo <b>Servidor</b> de la app. Sin Wi-Fi común: cable USB + <code>adb reverse tcp:8080 tcp:8080</code> y use <code>http://localhost:8080/WS_EUREKA_RESTFUL_JAVA/api</code>.</p>
+  </section>
+
+  <section>
+    <h2>🔌 Endpoints disponibles <span class="chip" id="base"></span></h2>
+    <table>
+      <tr><th>Método</th><th>Endpoint</th><th>Descripción</th><th>Token</th></tr>
+      <tr><td><span class="met POST">POST</span></td><td><code>/api/auth/login</code></td><td>Inicia sesión: {usuario, clave, cliente}</td><td>No</td></tr>
+      <tr><td><span class="met POST">POST</span></td><td><code>/api/auth/logout</code></td><td>Cierra la sesión</td><td>Sí</td></tr>
+      <tr><td><span class="met GET">GET</span></td><td><code>/api/cuentas</code></td><td>Lista las cuentas con titular, moneda y saldo</td><td>Sí</td></tr>
+      <tr><td><span class="met GET">GET</span></td><td><code>/api/cuentas/{cuenta}</code></td><td>Consulta el saldo de una cuenta</td><td>Sí</td></tr>
+      <tr><td><span class="met GET">GET</span></td><td><code>/api/cuentas/{cuenta}/movimientos</code></td><td>Movimientos de la cuenta</td><td>Sí</td></tr>
+      <tr><td><span class="met POST">POST</span></td><td><code>/api/operaciones/deposito</code></td><td>Depósito: {cuenta, importe}</td><td>Sí</td></tr>
+      <tr><td><span class="met POST">POST</span></td><td><code>/api/operaciones/retiro</code></td><td>Retiro: {cuenta, importe}</td><td>Sí</td></tr>
+      <tr><td><span class="met POST">POST</span></td><td><code>/api/operaciones/transferencia</code></td><td>Transferencia: {cuenta, cuentaDestino, importe}</td><td>Sí</td></tr>
+      <tr><td><span class="met GET">GET</span></td><td><code>/api/clientes?buscar=</code></td><td>Listar / buscar clientes</td><td>Sí</td></tr>
+      <tr><td><span class="met GET">GET</span></td><td><code>/api/clientes/{codigo}</code></td><td>Seleccionar un cliente</td><td>Sí</td></tr>
+      <tr><td><span class="met POST">POST</span></td><td><code>/api/clientes</code></td><td>Insertar cliente</td><td>Sí</td></tr>
+      <tr><td><span class="met PUT">PUT</span></td><td><code>/api/clientes/{codigo}</code></td><td>Actualizar cliente</td><td>Sí</td></tr>
+      <tr><td><span class="met DELETE">DELETE</span></td><td><code>/api/clientes/{codigo}</code></td><td>Eliminar cliente (sin cuentas)</td><td>Sí</td></tr>
+      <tr><td><span class="met GET">GET</span></td><td><code>/api/estado</code></td><td>Estado del servidor y de la BD (este panel)</td><td>No</td></tr>
+    </table>
+  </section>
+</main>
+<footer>Arquitectura de Software · ESPE · Payara Server 7 · Jakarta EE 11 · JDK 21 · MariaDB</footer>
+
+<script>
+const API = location.origin + location.pathname.replace(/\/[^/]*$/, "") + "/api";
+const COLORES = {DEPOSITO:"var(--verde)", RETIRO:"var(--rojo)", TRANSFERENCIA:"var(--azul)"};
+const NOMBRES = {DEPOSITO:"Depósitos", RETIRO:"Retiros", TRANSFERENCIA:"Transferencias"};
+let vistos = new Set(), token = null;
+const dinero = n => Number(n).toLocaleString("es-EC", {minimumFractionDigits:2, maximumFractionDigits:2});
+document.getElementById("base").textContent = API;
+
+function contar(id, fin){
+  const el = document.getElementById(id), ini = parseInt(el.textContent) || 0;
+  if (ini === fin) return;
+  const t0 = performance.now();
+  (function paso(t){ const k = Math.min((t - t0) / 600, 1); el.textContent = Math.round(ini + (fin - ini) * k); if (k < 1) requestAnimationFrame(paso); })(t0);
+}
+function duracion(s){ const h = Math.floor(s/3600), m = Math.floor(s%3600/60); return h ? `${h} h ${m} min` : m ? `${m} min ${s%60} s` : `${s} s`; }
+function esc(t){ return String(t ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+async function refrescar(){
+  try{
+    const r = await fetch(API + "/estado", {cache:"no-store"}); const j = await r.json(); const e = j.datos;
+    document.getElementById("estado").classList.remove("caido");
+    document.getElementById("txtEstado").textContent = "Servicio ACTIVO";
+    const bdOk = e.baseDatos === "CONECTADA";
+    document.getElementById("estadoBd").classList.toggle("caido", !bdOk);
+    document.getElementById("txtBd").textContent = "MariaDB " + (bdOk ? "CONECTADA" : "SIN CONEXIÓN");
+    document.getElementById("uptime").textContent = duracion(e.segundosActivo);
+    document.getElementById("inicio").textContent = "Inicio: " + e.inicio;
+    contar("sesiones", e.sesionesActivas); contar("operaciones", e.totalOperaciones); contar("peticiones", e.totalPeticiones);
+    const pc = Object.entries(e.peticionesPorCliente || {}).map(([k,v]) => `${k}: ${v}`).join(" · ");
+    document.getElementById("porCliente").textContent = pc || "—";
+    const max = Math.max(1, ...Object.values(e.operacionesPorTipo));
+    document.getElementById("barras").innerHTML = Object.entries(e.operacionesPorTipo).map(([k,v]) =>
+      `<div class="barra"><div class="fila"><span>${NOMBRES[k]}</span><b>${v}</b></div><div class="pista"><div class="relleno" data-w="${v/max*100}" style="background:${COLORES[k]}"></div></div></div>`).join("");
+    requestAnimationFrame(() => document.querySelectorAll(".relleno").forEach(b => b.style.width = b.dataset.w + "%"));
+    const urls = e.urlsRed || [];
+    document.getElementById("urlsRed").innerHTML = urls.length
+      ? urls.map(u => `<code style="font-size:16px;padding:8px 12px;background:#0e1a30;border:1px solid var(--borde);border-radius:10px">${esc(u)}</code>`).join("")
+      : '<span style="color:var(--tenue)">No se detectó una red Wi-Fi/Ethernet activa</span>';
+    const ul = document.getElementById("eventos");
+    if (e.ultimosEventos.length){
+      ul.innerHTML = e.ultimosEventos.map(ev => {
+        const id = ev.hora + ev.tipo + ev.detalle, nuevo = !vistos.has(id); vistos.add(id);
+        return `<li class="evento ${ev.exito ? "" : "error"}" style="${nuevo ? "" : "animation:none"}"><span class="hora">${esc(ev.hora)}</span><span class="badge b-${esc(ev.cliente)}">${esc(ev.cliente)}</span><span><b>${esc(ev.tipo)}</b> · ${esc(ev.detalle)}</span></li>`;
+      }).join("");
+    }
+  }catch(err){
+    document.getElementById("estado").classList.add("caido");
+    document.getElementById("txtEstado").textContent = "Servicio no disponible";
+    document.getElementById("estadoBd").classList.add("caido");
+    document.getElementById("txtBd").textContent = "BD desconocida";
+  }
+}
+
+function mostrar(msg, ok){ const r = document.getElementById("res"); r.className = "resultado"; void r.offsetWidth; r.className = "resultado " + (ok ? "ok" : "mal"); r.innerHTML = msg; }
+const hdr = () => ({"Content-Type":"application/json","Authorization":"Bearer " + token,"X-Cliente":"PANEL"});
+
+document.getElementById("fLogin").onsubmit = async ev => {
+  ev.preventDefault();
+  if (token){ await fetch(API + "/auth/logout", {method:"POST", headers:hdr()}); token = null;
+    document.getElementById("fConv").style.display = "none"; document.getElementById("btnLogin").textContent = "Iniciar sesión"; mostrar("Sesión cerrada.", true); return; }
+  const r = await fetch(API + "/auth/login", {method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({usuario: usr.value, clave: clv.value, cliente:"PANEL"})});
+  const j = await r.json();
+  if (!j.exito) return mostrar("❌ " + esc(j.mensaje), false);
+  token = j.datos.token;
+  const c = await (await fetch(API + "/cuentas", {headers:hdr()})).json();
+  document.getElementById("cta").innerHTML = (c.datos || []).map(x => `<option value="${x.codigo}">${x.codigo} · ${esc(x.cliente)} · ${x.moneda} (${x.estado})</option>`).join("");
+  document.getElementById("fConv").style.display = "grid"; document.getElementById("btnLogin").textContent = "Cerrar sesión";
+  mostrar("✅ " + esc(j.mensaje), true);
+};
+document.getElementById("fConv").onsubmit = async ev => {
+  ev.preventDefault();
+  const cod = document.getElementById("cta").value;
+  const j = await (await fetch(API + "/cuentas/" + cod, {headers:hdr()})).json();
+  if (!j.exito) { mostrar("❌ " + esc(j.mensaje), false); return refrescar(); }
+  const m = await (await fetch(API + "/cuentas/" + cod + "/movimientos", {headers:hdr()})).json();
+  const filas = (m.datos || []).slice(0, 6).map(x => `<tr><td>${x.numero}</td><td>${x.fecha}</td><td>${esc(x.tipo)}</td><td class="${x.accion === "INGRESO" ? "ing" : "sal"}">${x.accion === "INGRESO" ? "+" : "−"}${dinero(x.importe)}</td></tr>`).join("");
+  mostrar(`✅ Cuenta <b>${cod}</b> · ${esc(j.datos.cliente)}<br>Saldo: <b style="font-size:20px">${dinero(j.datos.saldo)} ${j.datos.moneda}</b>` +
+          (filas ? `<table class="movs"><tr><th>#</th><th>Fecha</th><th>Tipo</th><th>Importe</th></tr>${filas}</table>` : ""), true);
+  refrescar();
+};
+refrescar(); setInterval(refrescar, 3000);
+</script>
+</body>
+</html>

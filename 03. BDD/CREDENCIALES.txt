@@ -1,0 +1,14 @@
+Proyecto: EurekaBank - RESTful Java (BDD local MariaDB)
+GRUPO 1 - NRC 36841
+
+Base de datos : eurekabank (MariaDB)
+Servidor BD   : localhost, puerto 3307
+Usuario BD    : root / rootroot   (configurable en src/main/resources/db.properties)
+Usuario sistema (tabla usuario, clave en SHA-1): monster / monster69
+
+Orden de carga:
+  1. Crea_BD.sql     (DDL: DROP/CREATE DATABASE, CREATE TABLE, ALTER TABLE con FKs)
+  2. Carga_Datos.sql (datos de prueba: clientes, cuentas, movimientos, usuario monster)
+  3. Ajustes_Ecuador.sql (cedula de 10 digitos, solo Dolares, sucursales y ciudades de Ecuador)
+
+Cuentas de prueba (todas en Dolares): 00100001, 00100002, 00200001-00200003, 00300001 (CANCELADO)

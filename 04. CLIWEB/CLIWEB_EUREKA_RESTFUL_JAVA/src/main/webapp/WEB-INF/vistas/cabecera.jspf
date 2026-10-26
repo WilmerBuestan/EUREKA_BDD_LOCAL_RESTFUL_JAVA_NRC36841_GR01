@@ -1,0 +1,17 @@
+<%-- Fragmento: cabecera, menú y mensajes (se incluye en todas las vistas internas) --%>
+<header>
+    <img src="img/monster.png" class="mini" alt="Monster" onerror="this.outerHTML='<div class=&quot;mini ph&quot;>M</div>'">
+    <h1>EurekaBank Monster<small>Cliente WEB · RESTful Java + MariaDB · Grupo 1 · NRC 36841</small></h1>
+    <div class="usuario">
+        <span>👤 <c:out value="${usuarioSesion}"/></span>
+        <form method="post" action="logout" onsubmit="return confirm('¿Desea cerrar la sesión?')">
+            <button class="btn rojo" type="submit">Cerrar sesión</button>
+        </form>
+    </div>
+</header>
+<nav class="menu">
+    <a href="cuentas" class="${menu == 'cuentas' ? 'activo' : ''}">🏦 Cuentas</a>
+    <a href="operaciones" class="${menu == 'operaciones' ? 'activo' : ''}">💸 Operaciones</a>
+    <a href="movimientos" class="${menu == 'movimientos' ? 'activo' : ''}">📄 Movimientos</a>
+    <a href="clientes" class="${menu == 'clientes' ? 'activo' : ''}">👥 Clientes</a>
+</nav>
