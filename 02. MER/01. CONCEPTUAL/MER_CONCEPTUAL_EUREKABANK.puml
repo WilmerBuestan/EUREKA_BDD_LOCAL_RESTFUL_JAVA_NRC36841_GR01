@@ -1,0 +1,137 @@
+@startuml
+!include estilo.iuml
+title Modelo conceptual - EurekaBank
+skinparam dpi 110
+hide circle
+left to right direction
+skinparam linetype polyline
+skinparam nodesep 45
+skinparam ranksep 55
+entity "Cliente" as cliente #D9E2F3 {
+  # código
+  --
+  apellido paterno
+  apellido materno
+  nombres
+  cédula
+  ciudad
+  dirección
+  teléfono
+  correo
+}
+entity "Cuenta" as cuenta #D9E2F3 {
+  # número
+  --
+  saldo
+  fecha de apertura
+  estado
+  contador de movimientos
+  PIN
+}
+entity "Movimiento" as movimiento #D9E2F3 {
+  # número
+  --
+  fecha
+  importe
+  cuenta de referencia
+}
+entity "Tipo de movimiento" as tipomovimiento #E2F0D9 {
+  # código
+  --
+  descripción
+  acción
+  estado
+}
+entity "Moneda" as moneda #E2F0D9 {
+  # código
+  --
+  descripción
+}
+entity "Sucursal" as sucursal #E2F0D9 {
+  # código
+  --
+  nombre
+  ciudad
+  dirección
+  contador de cuentas
+}
+entity "Empleado" as empleado #FCE4D6 {
+  # código
+  --
+  apellido paterno
+  apellido materno
+  nombres
+  ciudad
+  dirección
+}
+entity "Usuario" as usuario #FCE4D6 {
+  usuario
+  clave
+  estado
+}
+entity "Módulo" as modulo #FCE4D6 {
+  # código
+  --
+  nombre
+  estado
+}
+entity "Permiso" as permiso #FCE4D6 {
+  estado
+}
+entity "Asignación" as asignado #FCE4D6 {
+  # código
+  --
+  fecha de alta
+  fecha de baja
+}
+entity "Registro de sesión" as logsession #FCE4D6 {
+  # identificador
+  --
+  fecha de ingreso
+  fecha de salida
+  IP
+  equipo
+}
+entity "Cargo de mantenimiento" as cargomantenimiento #FFF2CC {
+  monto máximo
+  importe
+}
+entity "Costo por movimiento" as costomovimiento #FFF2CC {
+  importe
+}
+entity "Interés mensual" as interesmensual #FFF2CC {
+  tasa
+}
+entity "Parámetro" as parametro #FFF2CC {
+  # código
+  --
+  descripción
+  valor
+  estado
+}
+entity "Contador" as contador #FFF2CC {
+  # tabla
+  --
+  último ítem
+  longitud
+}
+cliente ||--o{ cuenta : "es titular de"
+moneda ||--o{ cuenta : "expresa el saldo de"
+sucursal ||--o{ cuenta : "abre"
+empleado ||--o{ cuenta : "crea"
+cuenta ||--|{ movimiento : "registra"
+empleado ||--o{ movimiento : "realiza"
+tipomovimiento ||--o{ movimiento : "clasifica"
+empleado ||--o{ asignado : "tiene"
+sucursal ||--o{ asignado : "recibe"
+empleado ||--o| usuario : "accede como"
+usuario ||--o{ permiso : "tiene"
+modulo ||--o{ permiso : "se concede en"
+empleado ||--o{ logsession : "genera"
+moneda ||--o| cargomantenimiento : "define"
+moneda ||--o| costomovimiento : "define"
+moneda ||--o| interesmensual : "define"
+legend right
+  <back:#D9E2F3>  Negocio  </back>  <back:#E2F0D9>  Catálogo  </back>  <back:#FCE4D6>  Seguridad  </back>  <back:#FFF2CC>  Parámetros  </back>
+endlegend
+@enduml

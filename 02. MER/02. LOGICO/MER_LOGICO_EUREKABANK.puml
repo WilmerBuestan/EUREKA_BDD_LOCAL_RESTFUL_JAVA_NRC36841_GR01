@@ -1,0 +1,158 @@
+@startuml
+!include estilo.iuml
+title Modelo lógico - EurekaBank
+skinparam dpi 110
+hide circle
+left to right direction
+skinparam linetype polyline
+skinparam nodesep 45
+skinparam ranksep 55
+entity "cliente" as cliente #D9E2F3 {
+  * chr_cliecodigo : Carácter fijo (5) <<PK>>
+  --
+  * vch_cliepaterno : Texto variable (25)
+  * vch_cliematerno : Texto variable (25)
+  * vch_clienombre : Texto variable (30)
+  * chr_cliedni : Carácter fijo (10)
+  * vch_clieciudad : Texto variable (30)
+  * vch_cliedireccion : Texto variable (50)
+    vch_clietelefono : Texto variable (20)
+    vch_clieemail : Texto variable (50)
+}
+entity "cuenta" as cuenta #D9E2F3 {
+  * chr_cuencodigo : Carácter fijo (8) <<PK>>
+  --
+  * chr_monecodigo : Carácter fijo (2) <<FK>>
+  * chr_sucucodigo : Carácter fijo (3) <<FK>>
+  * chr_emplcreacuenta : Carácter fijo (4) <<FK>>
+  * chr_cliecodigo : Carácter fijo (5) <<FK>>
+  * dec_cuensaldo : Número decimal (12,2)
+  * dtt_cuenfechacreacion : Fecha
+  * vch_cuenestado : Texto variable (15)
+  * int_cuencontmov : Número entero
+  * chr_cuenclave : Carácter fijo (6)
+}
+entity "movimiento" as movimiento #D9E2F3 {
+  * chr_cuencodigo : Carácter fijo (8) <<PK,FK>>
+  * int_movinumero : Número entero <<PK>>
+  --
+  * dtt_movifecha : Fecha
+  * chr_emplcodigo : Carácter fijo (4) <<FK>>
+  * chr_tipocodigo : Carácter fijo (3) <<FK>>
+  * dec_moviimporte : Número decimal (12,2)
+    chr_cuenreferencia : Carácter fijo (8)
+}
+entity "tipomovimiento" as tipomovimiento #E2F0D9 {
+  * chr_tipocodigo : Carácter fijo (3) <<PK>>
+  --
+  * vch_tipodescripcion : Texto variable (40)
+  * vch_tipoaccion : Texto variable (10)
+  * vch_tipoestado : Texto variable (15)
+}
+entity "moneda" as moneda #E2F0D9 {
+  * chr_monecodigo : Carácter fijo (2) <<PK>>
+  --
+  * vch_monedescripcion : Texto variable (20)
+}
+entity "sucursal" as sucursal #E2F0D9 {
+  * chr_sucucodigo : Carácter fijo (3) <<PK>>
+  --
+  * vch_sucunombre : Texto variable (50)
+  * vch_sucuciudad : Texto variable (30)
+    vch_sucudireccion : Texto variable (50)
+  * int_sucucontcuenta : Número entero
+}
+entity "empleado" as empleado #FCE4D6 {
+  * chr_emplcodigo : Carácter fijo (4) <<PK>>
+  --
+  * vch_emplpaterno : Texto variable (25)
+  * vch_emplmaterno : Texto variable (25)
+  * vch_emplnombre : Texto variable (30)
+  * vch_emplciudad : Texto variable (30)
+    vch_empldireccion : Texto variable (50)
+}
+entity "usuario" as usuario #FCE4D6 {
+  * chr_emplcodigo : Carácter fijo (4) <<PK,FK>>
+  --
+  * vch_emplusuario : Texto variable (20)
+  * vch_emplclave : Texto variable (50)
+    vch_emplestado : Texto variable (15)
+}
+entity "modulo" as modulo #FCE4D6 {
+  * int_moducodigo : Número entero <<PK>>
+  --
+    vch_modunombre : Texto variable (50)
+  * vch_moduestado : Texto variable (15)
+}
+entity "permiso" as permiso #FCE4D6 {
+  * chr_emplcodigo : Carácter fijo (4) <<PK,FK>>
+  * int_moducodigo : Número entero <<PK,FK>>
+  --
+  * vch_permestado : Texto variable (15)
+}
+entity "asignado" as asignado #FCE4D6 {
+  * chr_asigcodigo : Carácter fijo (6) <<PK>>
+  --
+  * chr_sucucodigo : Carácter fijo (3) <<FK>>
+  * chr_emplcodigo : Carácter fijo (4) <<FK>>
+  * dtt_asigfechaalta : Fecha
+    dtt_asigfechabaja : Fecha
+}
+entity "logsession" as logsession #FCE4D6 {
+  * ID : Número entero <<PK>>
+  --
+  * chr_emplcodigo : Carácter fijo (4) <<FK>>
+  * fec_ingreso : Fecha y hora
+    fec_salida : Fecha y hora
+  * ip : Texto variable (20)
+  * hostname : Texto variable (100)
+}
+entity "cargomantenimiento" as cargomantenimiento #FFF2CC {
+  * chr_monecodigo : Carácter fijo (2) <<PK,FK>>
+  --
+  * dec_cargMontoMaximo : Número decimal (12,2)
+  * dec_cargImporte : Número decimal (12,2)
+}
+entity "costomovimiento" as costomovimiento #FFF2CC {
+  * chr_monecodigo : Carácter fijo (2) <<PK,FK>>
+  --
+  * dec_costimporte : Número decimal (12,2)
+}
+entity "interesmensual" as interesmensual #FFF2CC {
+  * chr_monecodigo : Carácter fijo (2) <<PK,FK>>
+  --
+  * dec_inteimporte : Número decimal (12,2)
+}
+entity "parametro" as parametro #FFF2CC {
+  * chr_paracodigo : Carácter fijo (3) <<PK>>
+  --
+  * vch_paradescripcion : Texto variable (50)
+  * vch_paravalor : Texto variable (70)
+  * vch_paraestado : Texto variable (15)
+}
+entity "contador" as contador #FFF2CC {
+  * vch_conttabla : Texto variable (30) <<PK>>
+  --
+  * int_contitem : Número entero
+  * int_contlongitud : Número entero
+}
+cliente ||--o{ cuenta : "es titular de"
+moneda ||--o{ cuenta : "expresa el saldo de"
+sucursal ||--o{ cuenta : "abre"
+empleado ||--o{ cuenta : "crea"
+cuenta ||--|{ movimiento : "registra"
+empleado ||--o{ movimiento : "realiza"
+tipomovimiento ||--o{ movimiento : "clasifica"
+empleado ||--o{ asignado : "tiene"
+sucursal ||--o{ asignado : "recibe"
+empleado ||--o| usuario : "accede como"
+usuario ||--o{ permiso : "tiene"
+modulo ||--o{ permiso : "se concede en"
+empleado ||--o{ logsession : "genera"
+moneda ||--o| cargomantenimiento : "define"
+moneda ||--o| costomovimiento : "define"
+moneda ||--o| interesmensual : "define"
+legend right
+  <back:#D9E2F3>  Negocio  </back>  <back:#E2F0D9>  Catálogo  </back>  <back:#FCE4D6>  Seguridad  </back>  <back:#FFF2CC>  Parámetros  </back>
+endlegend
+@enduml

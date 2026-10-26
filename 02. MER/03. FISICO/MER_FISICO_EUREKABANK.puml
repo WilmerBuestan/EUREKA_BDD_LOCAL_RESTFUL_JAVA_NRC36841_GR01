@@ -1,0 +1,155 @@
+@startuml
+!include estilo.iuml
+title Modelo físico (MER) - Base de datos eurekabank (MariaDB)
+skinparam dpi 110
+hide circle
+left to right direction
+skinparam linetype polyline
+skinparam nodesep 30
+skinparam ranksep 40
+entity "asignado" as asignado {
+  * chr_asigcodigo : char(6) <<PK>>
+  --
+  * chr_sucucodigo : char(3) <<FK>>
+  * chr_emplcodigo : char(4) <<FK>>
+  * dtt_asigfechaalta : date
+    dtt_asigfechabaja : date
+}
+entity "cargomantenimiento" as cargomantenimiento {
+  * chr_monecodigo : char(2) <<PK,FK>>
+  --
+  * dec_cargMontoMaximo : decimal(12,2)
+  * dec_cargImporte : decimal(12,2)
+}
+entity "cliente" as cliente {
+  * chr_cliecodigo : char(5) <<PK>>
+  --
+  * vch_cliepaterno : varchar(25)
+  * vch_cliematerno : varchar(25)
+  * vch_clienombre : varchar(30)
+  * chr_cliedni : char(10)
+  * vch_clieciudad : varchar(30)
+  * vch_cliedireccion : varchar(50)
+    vch_clietelefono : varchar(20)
+    vch_clieemail : varchar(50)
+}
+entity "contador" as contador {
+  * vch_conttabla : varchar(30) <<PK>>
+  --
+  * int_contitem : int(11)
+  * int_contlongitud : int(11)
+}
+entity "costomovimiento" as costomovimiento {
+  * chr_monecodigo : char(2) <<PK,FK>>
+  --
+  * dec_costimporte : decimal(12,2)
+}
+entity "cuenta" as cuenta {
+  * chr_cuencodigo : char(8) <<PK>>
+  --
+  * chr_monecodigo : char(2) <<FK>>
+  * chr_sucucodigo : char(3) <<FK>>
+  * chr_emplcreacuenta : char(4) <<FK>>
+  * chr_cliecodigo : char(5) <<FK>>
+  * dec_cuensaldo : decimal(12,2)
+  * dtt_cuenfechacreacion : date
+  * vch_cuenestado : varchar(15)
+  * int_cuencontmov : int(11)
+  * chr_cuenclave : char(6)
+}
+entity "empleado" as empleado {
+  * chr_emplcodigo : char(4) <<PK>>
+  --
+  * vch_emplpaterno : varchar(25)
+  * vch_emplmaterno : varchar(25)
+  * vch_emplnombre : varchar(30)
+  * vch_emplciudad : varchar(30)
+    vch_empldireccion : varchar(50)
+}
+entity "interesmensual" as interesmensual {
+  * chr_monecodigo : char(2) <<PK,FK>>
+  --
+  * dec_inteimporte : decimal(12,2)
+}
+entity "logsession" as logsession {
+  * ID : int(11) <<PK>>
+  --
+  * chr_emplcodigo : char(4) <<FK>>
+  * fec_ingreso : datetime
+    fec_salida : datetime
+  * ip : varchar(20)
+  * hostname : varchar(100)
+}
+entity "modulo" as modulo {
+  * int_moducodigo : int(11) <<PK>>
+  --
+    vch_modunombre : varchar(50)
+  * vch_moduestado : varchar(15)
+}
+entity "moneda" as moneda {
+  * chr_monecodigo : char(2) <<PK>>
+  --
+  * vch_monedescripcion : varchar(20)
+}
+entity "movimiento" as movimiento {
+  * chr_cuencodigo : char(8) <<PK,FK>>
+  * int_movinumero : int(11) <<PK>>
+  --
+  * dtt_movifecha : date
+  * chr_emplcodigo : char(4) <<FK>>
+  * chr_tipocodigo : char(3) <<FK>>
+  * dec_moviimporte : decimal(12,2)
+    chr_cuenreferencia : char(8)
+}
+entity "parametro" as parametro {
+  * chr_paracodigo : char(3) <<PK>>
+  --
+  * vch_paradescripcion : varchar(50)
+  * vch_paravalor : varchar(70)
+  * vch_paraestado : varchar(15)
+}
+entity "permiso" as permiso {
+  * chr_emplcodigo : char(4) <<PK,FK>>
+  * int_moducodigo : int(11) <<PK,FK>>
+  --
+  * vch_permestado : varchar(15)
+}
+entity "sucursal" as sucursal {
+  * chr_sucucodigo : char(3) <<PK>>
+  --
+  * vch_sucunombre : varchar(50)
+  * vch_sucuciudad : varchar(30)
+    vch_sucudireccion : varchar(50)
+  * int_sucucontcuenta : int(11)
+}
+entity "tipomovimiento" as tipomovimiento {
+  * chr_tipocodigo : char(3) <<PK>>
+  --
+  * vch_tipodescripcion : varchar(40)
+  * vch_tipoaccion : varchar(10)
+  * vch_tipoestado : varchar(15)
+}
+entity "usuario" as usuario {
+  * chr_emplcodigo : char(4) <<PK,FK>>
+  --
+  * vch_emplusuario : varchar(20)
+  * vch_emplclave : varchar(50)
+    vch_emplestado : varchar(15)
+}
+cliente ||--o{ cuenta
+moneda ||--o{ cuenta
+sucursal ||--o{ cuenta
+empleado ||--o{ cuenta
+moneda ||--o{ cargomantenimiento
+modulo ||--o{ permiso
+usuario ||--o{ permiso
+empleado ||--o{ logsession
+moneda ||--o{ costomovimiento
+empleado ||--o{ usuario
+empleado ||--o{ asignado
+sucursal ||--o{ asignado
+moneda ||--o{ interesmensual
+cuenta ||--o{ movimiento
+empleado ||--o{ movimiento
+tipomovimiento ||--o{ movimiento
+@enduml
